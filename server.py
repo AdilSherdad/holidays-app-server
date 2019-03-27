@@ -47,14 +47,14 @@ def get_holiday():
 	# holidays = resp['response']['holidays']
 	# holiday=holidays[0]
 
-    rows = session.execute("SELECT * FROM keyspaces.holidays")
-    for row in rows:
-        holiday = {'id':row.id, 'name': row.name, 'description': row.description, 'locations': row.locations, 'date': row.date }
-        holidays.append(holiday)
+	rows = session.execute("SELECT * FROM keyspaces.holidays")
+	for row in rows:
+		holiday = {'id':row.id, 'name': row.name, 'description': row.description, 'locations': row.locations, 'date': row.date }
+		holidays.append(holiday)
 
 	return jsonify(holidays), 200
 
-    #respon.status_code = 200
+	#respon.status_code = 200
 	# or 400 or whatever
 
 @app.route('/holiday/local', methods=['GET'])
@@ -74,24 +74,21 @@ def create_holiday():
 
 	for holi in holidays:
 		if holi['name'] == request.form['name']:
-            # holi['date']['iso']
+			# holi['date']['iso']
+			count_rows = session.execute("SELECT COUNT(*) FROM keyspaces.history")
 
-            count_rows = session.execute("SELECT COUNT(*) FROM keyspaces.history")
-
-        	#last_id = cities[-1]['id'];
-        	for c in count_rows:
-        		last_id = c.count
-        	last_id += 1
+			for c in count_rows:
+				last_id = c.count
+			last_id += 1
 
 			rows = session.execute("INSERT INTO keyspaces.history(id, name, description, locations, date) VALUES(%s, %s, %s, %s, %s)", (last_id, request.form['name'], request.form['description'], holi['locations'], holi['date'].iso))
 
-            return jsonify({'message':'holiday created successfully'}), 201
+			return jsonify({'message':'holiday created successfully'}), 201
 
 	return jsonify({'error': 'holiday not created'}), 400
 
 @app.route('/holiday/<int:id>', methods=['PUT'])
 def update_holiday(id):
-
 
 	if not request.form or not 'name' in request.form:
 		return jsonify({'Error': 'holiday not found'}), 404
@@ -105,7 +102,7 @@ def update_holiday(id):
 @app.route('/holiday/<int:id>', methods=['DELETE'])
 def delete_holiday(id):
 
-    if not id:
+	if not id:
 		return jsonify({'Error': 'The id is needed to delete'}), 400
 
 	resp = session.execute("""DELETE FROM keyspaces.history WHERE id={}""".format(id))
