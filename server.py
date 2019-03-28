@@ -24,7 +24,7 @@ def get_holiday():
         # resp = requests.get(hol_url).json()
         # holidays = resp['response']['holidays']
         # holiday=holidays[0]
-
+        holidays = []
         rows = session.execute("SELECT * FROM calendar.holidays")
         for row in rows:
                 holiday = {'id':row.id, 'name': row.name, 'description': row.description, 'locations': row.locations, 'date': row.date }
