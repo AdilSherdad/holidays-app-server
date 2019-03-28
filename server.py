@@ -65,6 +65,7 @@ def create_holiday():
 
         return jsonify({'error': 'holiday not created'}), 400
 
+
 @app.route('/holiday/<int:id>', methods=['PUT'])
 def update_holiday(id):
 
