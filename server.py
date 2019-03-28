@@ -25,7 +25,7 @@ def get_holiday():
         # holidays = resp['response']['holidays']
         # holiday=holidays[0]
 
-        rows = session.execute("SELECT * FROM keyspaces.holidays")
+        rows = session.execute("SELECT * FROM calendar.holidays")
         for row in rows:
                 holiday = {'id':row.id, 'name': row.name, 'description': row.description, 'locations': row.locations, 'date': row.date }
                 holidays.append(holiday)
@@ -53,13 +53,13 @@ def create_holiday():
         for holi in holidays:
                 if holi['name'] == request.form['name']:
                         # holi['date']['iso']
-                        count_rows = session.execute("SELECT COUNT(*) FROM keyspaces.history")
+                        count_rows = session.execute("SELECT COUNT(*) FROM calendar.history")
 
                         for c in count_rows:
                                 last_id = c.count
                         last_id += 1
 
-                        rows = session.execute("INSERT INTO keyspaces.history(id, name, description, locations, date) VALUES(%s, %s, %s, %s, %s)", (last_id, request.form['name'], request.form['description'], holi['locations'], holi['date'].iso))
+                        rows = session.execute("INSERT INTO calendar.history(id, name, description, locations, date) VALUES(%s, %s, %s, %s, %s)", (last_id, request.form['name'], request.form['description'], holi['locations'], holi['date'].iso))
 
                         return jsonify({'message':'holiday created successfully'}), 201
 
@@ -72,7 +72,7 @@ def update_holiday(id):
         if not request.form or not 'name' in request.form:
                 return jsonify({'Error': 'holiday not found'}), 404
 
-        rows = session.execute("""UPDATE keyspaces.history SET name=%(name)s description=%(description)s WHERE id=%(id)s""", {'id': id, 'name': request.form['name'], 'description': request.form['description']})
+        rows = session.execute("""UPDATE calendar.history SET name=%(name)s description=%(description)s WHERE id=%(id)s""", {'id': id, 'name': request.form['name'], 'description': request.form['description']})
 
         print('after update')
 
@@ -84,7 +84,7 @@ def delete_holiday(id):
         if not id:
                 return jsonify({'Error': 'The id is needed to delete'}), 400
 
-        resp = session.execute("""DELETE FROM keyspaces.history WHERE id={}""".format(id))
+        resp = session.execute("""DELETE FROM calendar.history WHERE id={}""".format(id))
 
         return jsonify({'message': 'deleted: /holiday/{}'.format(id)}), 200
 
